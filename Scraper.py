@@ -8,18 +8,15 @@ def get_daily_data(keys, sd, ed, compare_keys=True):
     # The maximum for a timeframe for which we get daily data is 270.
     # Therefore we could go back 269 days. However, since there might
     # be issues when rescaling, e.g. zero entries, we should have an
-    # overlap that does not consist of only one period. Therefore,
-    # I limit the step size to 250. This leaves 19 periods for overlap.
+    # overlap that does not consist of only one period. 
     maxstep = 269
     overlap = 40
     step = maxstep - overlap + 1
-    # key_list = ["Debt","Stock"]
     if compare_keys:
         key_list = ["0"]
     else:
         key_list = keys
 
-    # start_date = datetime(2018, 5, 5).date()
     start_date = sd
     masterdf = pd.DataFrame()
     pytrend = TrendReq()
@@ -102,17 +99,8 @@ def get_daily_data(keys, sd, ed, compare_keys=True):
                 # Apply scaling
                 temp_df.loc[beg:end, kw] = temp_df.loc[beg:end, kw] * scaling
             interest_over_time_df = pd.concat([temp_df[:-overlap], interest_over_time_df])
-            # print(interest_over_time_df)
         # Save dataset
-        # print(interest_over_time_df[kw].to_string())
         masterdf[kw] = interest_over_time_df[kw]
-        # if(masterdf.empty):
-
-        # print(masterdf.to_string())
-
-        # masterdf.join(interest_over_time_df[kw])
-
-        # interest_over_time_df.to_csv(filename)
     # print(masterdf.to_string())
     return masterdf
     # masterdf.to_csv(filename)
@@ -122,8 +110,7 @@ def get_weekly_data(keys, sd, ed,compare_keys=True):
     # The maximum for a timeframe for which we get daily data is 270.
     # Therefore we could go back 269 days. However, since there might
     # be issues when rescaling, e.g. zero entries, we should have an
-    # overlap that does not consist of only one period. Therefore,
-    # I limit the step size to 250. This leaves 19 periods for overlap.
+    # overlap that does not consist of only one period.
     multiplier = 7
     maxstep = 269 * multiplier
     overlap = 40 * multiplier
@@ -201,8 +188,6 @@ def get_weekly_data(keys, sd, ed,compare_keys=True):
                 # Since we might encounter zeros, we loop over the
                 # overlap until we find a non-zero element
                 for t in range(1, overlap + 1):
-                    # print('t = ',t)
-                    # print(temp_df[kw].iloc[-t])
                     if temp_df[kw].iloc[-t] != 0:
                         scaling = interest_over_time_df[kw].iloc[t - 1] / temp_df[kw].iloc[-t]
                         # print('Found non-zero overlap!')
@@ -213,21 +198,9 @@ def get_weekly_data(keys, sd, ed,compare_keys=True):
                 # Apply scaling
                 temp_df.loc[beg:end, kw] = temp_df.loc[beg:end, kw] * scaling
             interest_over_time_df = pd.concat([temp_df[:-40], interest_over_time_df])
-
-
-            # print(interest_over_time_df)
         # Save dataset
-        # print(interest_over_time_df[kw].to_string())
         print(kw)
         masterdf[kw] = interest_over_time_df[kw]
-        # if(masterdf.empty):
-
-        # print(masterdf.to_string())
-
-        # masterdf.join(interest_over_time_df[kw])
-
-        # interest_over_time_df.to_csv(filename)
-    # print(masterdf.to_string())
     if start_date > today - timedelta(days=min_val):
         masterdf = masterdf.query('date > @start_date')
     return masterdf
@@ -247,11 +220,11 @@ def weekly_sanity_check():
     print(interest_over_time_df.to_string())
 
 def main():
-    key_list = ["chipotle"]
+    key_list = ["web scraping"]
     start_date = datetime(2013, 1, 1).date()
     end_date = datetime(2019, 4, 23).date()
-    #daily_file = 'daily_noodles_search_volume.csv'
-    weekly_file = 'weekly_noodles_search_volume.csv'
+    weekly_file = 'weekly_search_volume.csv'
+    #save to file
     get_weekly_data(key_list, start_date, end_date, compare_keys=False).to_csv(weekly_file)
 
 
